@@ -13,6 +13,6 @@ CKEDITOR.plugins.add('i18n',
 			icon: this.path + "favicon.ico"
 		});
 
-		// CKEDITOR.dialog.add(b, this.path + "dialog/ab.js");
+		CKEDITOR.dialog.add(b, this.path + "dialog/dg.js");
 	}
 })
