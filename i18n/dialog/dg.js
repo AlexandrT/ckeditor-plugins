@@ -24,14 +24,28 @@ CKEDITOR.dialog.add("i18n", function(e) {
 				label: 'Format',
 				accessKey: 'T',
 				items: [
-					['1'],
-					['2']
-				]
+					['Создать новый перевод']
+				],
+				setup: function(element) {
+					var select = this.getInputElement();
+					console.log(select.$);
+					var element_id = '#' + this.getInputElement().$.id;
+
+					// CKEDITOR.ajax.load(url + '', function(data) {
+						var data = '{"permalink":"key1", "lang_ru":"Меня зовут Борис", "lang_en":"My nam Boris"}';
+						var items = JSON.parse(data);
+
+						for(var item in items) {
+							console.log(item + ": " + items[item]);
+							select.appendHtml("<option>" + items[item] + "</option>");
+						};
+					// })
+				}
 			},
 			{
 				id: 'val',
 				type: 'text',
-				html: '<input type="text">Hello world</input>'
+				html: '<input type="text"/>'
 			}]
 		}],
 		buttons: [

@@ -1,6 +1,7 @@
 {
   "name": "plugins-for-ckeditor",
   "dependencies": {
+  	"jquery": "~2.1.1",
     "ckeditor": "4"
   }
 }
