@@ -82,9 +82,9 @@ CKEDITOR.dialog.add("i18n", function(e) {
 			label: usingLanguages[k]
 		});
 
-		dialog.getContentElement('info', usingLanguages[k]).on('change', function() {
-			
-		});
+		/*dialog.getContentElement('info', usingLanguages[k]).on('change', function() {
+			console.log(k);
+		});*/
 	}
 
 	return {
@@ -121,16 +121,38 @@ CKEDITOR.dialog.add("i18n", function(e) {
 	};
 
 	function addSmth() {
+		
+		
 		var currentLocale = CKEDITOR.instances.editor1.config.currentLocale;
+		var usingLanguages = CKEDITOR.instances.editor1.config.usingLanguages;
 
-		var t = dialog.getValueOf('info', 'format'); // амиго
-		var v = dialog.getInputElement('info', 'format');
+		/*
+		var  req = {};
+		req["locale"] = {};
+		$.each(usingLanguages, function(key, item){
+
+			var textarea = dialog._.getContentElement('info', item);
+
+			if (textarea.isChanged())
+			{
+				if (textarea.getValue() === "")
+				{
+					alert("не все переводы заполнены");
+					return false;
+				}
+				
+				req["locale"][item] = dialog._.getContentElement('info', item).getValue();
+			}
+		});*/
+
+		var t = $("select option:selected").text(); // амиго
+		var v = $("select").val();  //key2
 		if(t.length == 0) {
 			alert('You are wrong!');
 			return false;
 		}
 
-		CKEDITOR.instances.editor1.insertHtml('<t permalink="' + v + '">' + t + "</t><br>");  // <t permalink="key1">Меня зовут Борис</t>
+		CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // <t permalink="key1">Меня зовут Борис</t>
 		return false;
 	};
 });
