@@ -1,38 +1,20 @@
 CKEDITOR.dialog.add("i18n", function(e) {
+	console.log(CKEDITOR.instances.editor1.lang.i18n.select);
   tabElements = [{
 		id: 'format',
 		type: 'select',
 		label: 'Format',
 		accessKey: 'T',
 		items: [
-			['Создать новый перевод']
+			'CKEDITOR.instances.editor1.lang.i18n.select'
 		],
-		/*change: function() {
-			var select = this.getInputElement();
-			console.log(select.getValue());  // key1
-			var data = window.amigo.data;
-			for (hash in data)
-			{
-				if (hash['permalink'] === select.getValue())
-				{
-					console.log('find');
-					// set hash['prefix + currentLocale'] to $("textarea[value=prefix + currentLocale]")
-					var t = dialog.getValueOf('info', 'format'); // амиго
-					break;
-				}
-			}
-		}, */
 		setup: function(element) {
 			var select = this.getInputElement();
 
 			select.on('change', function(){ 
-				// var select = this.getInputElement();
-				// console.log(this);  // key1
 				var data = window.amigo.data;
-				for (var n=0; n < data.length; n++)
+				for (var n = 0; n < data.length; n++)
 				{
-					// console.log(data[n]);  // {"permalink":"key1", "lang_ru":"Борис", "lang_en":"Boris"}
-					// console.log(this.getValue());
 					if (data[n]['permalink'] === this.getValue())
 					{
 						for (item in data[n])
@@ -41,7 +23,6 @@ CKEDITOR.dialog.add("i18n", function(e) {
 							{
 								console.log(data[n][item]);
 								dialog.getContentElement('info', item).setValue(data[n][item]);
-								// $(data[n]).setValue(data[n][item]);
 							}
 						}
 						break;
@@ -55,8 +36,6 @@ CKEDITOR.dialog.add("i18n", function(e) {
 			var currentLocale = CKEDITOR.instances.editor1.config.currentLocale; // "lang_ru"
 			var usingLanguages = CKEDITOR.instances.editor1.config.usingLanguages;  // ["lang_ru", "lang_en"]
 
-			// var tab = dialog.definition.getContents("info");
-
 			// CKEDITOR.ajax.load(url + '', function(data) {
 				var data = [ {"permalink":"key1", "lang_ru":"Борис", "lang_en":"Boris"}, {"permalink":"key2", "lang_ru":"амиго", "lang_en":"amigo"} ];
 				window.amigo = {};
@@ -65,8 +44,6 @@ CKEDITOR.dialog.add("i18n", function(e) {
 				{
 					console.log(data[i]);
 					// var items = JSON.parse(data[i]);
-					// console.log(items);
-
 					select.appendHtml("<option value='" + data[i]['permalink'] + "'>" + data[i][currentLocale] + "</option>");
 				};
 			// }
@@ -81,14 +58,10 @@ CKEDITOR.dialog.add("i18n", function(e) {
 			html: '<textarea></textarea>',
 			label: usingLanguages[k]
 		});
-
-		/*dialog.getContentElement('info', usingLanguages[k]).on('change', function() {
-			console.log(k);
-		});*/
 	}
 
 	return {
-		title: 'dialog',
+		title: CKEDITOR.instances.editor1.lang.i18n.title,
 		resizable: CKEDITOR.DIALOG_RESIZE_BOTH,
 		minWidth: 300,
 		minHeight: 100,
@@ -125,34 +98,31 @@ CKEDITOR.dialog.add("i18n", function(e) {
 		
 		var currentLocale = CKEDITOR.instances.editor1.config.currentLocale;
 		var usingLanguages = CKEDITOR.instances.editor1.config.usingLanguages;
-
-		/*
+		
+		var t = $("select option:selected").text(); // амиго
+		var v = $("select").val();  //key2
+		
 		var  req = {};
 		req["locale"] = {};
 		$.each(usingLanguages, function(key, item){
 
-			var textarea = dialog._.getContentElement('info', item);
+			var textarea = dialog.getContentElement('info', item);
 
-			if (textarea.isChanged())
+			if (textarea.getValue() === "")
 			{
-				if (textarea.getValue() === "")
+				if (textarea.isChanged())
 				{
 					alert("не все переводы заполнены");
 					return false;
 				}
 				
-				req["locale"][item] = dialog._.getContentElement('info', item).getValue();
+				req["locale"][item] = dialog.getContentElement('info', item).getValue();
 			}
-		});*/
+		});
 
-		var t = $("select option:selected").text(); // амиго
-		var v = $("select").val();  //key2
-		if(t.length == 0) {
-			alert('You are wrong!');
-			return false;
-		}
 
 		CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // <t permalink="key1">Меня зовут Борис</t>
+		CKEDITOR.dialog.getCurrent().hide();
 		return false;
 	};
 });

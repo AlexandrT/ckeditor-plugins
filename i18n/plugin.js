@@ -1,6 +1,7 @@
 CKEDITOR.plugins.add('i18n',
 {
 	requires: ['dialog'],
+	lang: 'en, ru',
 	init: function(a) {
 		var b = "i18n";
 		var c = a.addCommand(b, new CKEDITOR.dialogCommand(b));
