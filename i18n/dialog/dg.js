@@ -6,7 +6,7 @@ CKEDITOR.dialog.add("i18n", function(e) {
 		label: 'Format',
 		accessKey: 'T',
 		items: [
-			'CKEDITOR.instances.editor1.lang.i18n.select'
+			CKEDITOR.instances.editor1.lang.i18n.select.toString()
 		],
 		setup: function(element) {
 			var select = this.getInputElement();
@@ -21,8 +21,8 @@ CKEDITOR.dialog.add("i18n", function(e) {
 						{
 							if (/lang.*/.test(item))
 							{
-								console.log(data[n][item]);
 								dialog.getContentElement('info', item).setValue(data[n][item]);
+								dialog.getContentElement('info', item).setInitValue();
 							}
 						}
 						break;
@@ -99,30 +99,39 @@ CKEDITOR.dialog.add("i18n", function(e) {
 		var currentLocale = CKEDITOR.instances.editor1.config.currentLocale;
 		var usingLanguages = CKEDITOR.instances.editor1.config.usingLanguages;
 		
-		var t = $("select option:selected").text(); // амиго
+		// var t = $("select option:selected").text(); // амиго
 		var v = $("select").val();  //key2
 		
 		var  req = {};
 		req["locale"] = {};
+
 		$.each(usingLanguages, function(key, item){
 
 			var textarea = dialog.getContentElement('info', item);
 
-			if (textarea.getValue() === "")
+			if (textarea.getValue() !== "")
 			{
-				if (textarea.isChanged())
-				{
-					alert("не все переводы заполнены");
-					return false;
-				}
 				
 				req["locale"][item] = dialog.getContentElement('info', item).getValue();
+
+				if (textarea.isChanged())
+				{
+					// CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // t надо брать из textarea
+				} else {
+					CKEDITOR.dialog.getCurrent().hide();
+				}
+				
+			} else {
+				alert("не все переводы заполнены");
+				return false;
 			}
 		});
 
-
-		CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // <t permalink="key1">Меня зовут Борис</t>
+		var t = dialog.getContentElement('info', currentLocale).getValue();
+		CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // t надо брать из textarea
+		// sent requesst (edit or create)
 		CKEDITOR.dialog.getCurrent().hide();
-		return false;
+
+
 	};
 });
