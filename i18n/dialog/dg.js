@@ -1,37 +1,43 @@
 CKEDITOR.dialog.add("i18n", function(e) {
-	console.log(CKEDITOR.instances.editor1.lang.i18n.select);
   tabElements = [{
 		id: 'format',
 		type: 'select',
 		label: 'Format',
 		accessKey: 'T',
 		items: [
-			CKEDITOR.instances.editor1.lang.i18n.select.toString()
+			[CKEDITOR.instances.editor1.lang.i18n.select, "service_value"]
 		],
+		'default': CKEDITOR.instances.editor1.lang.i18n.select,
 		setup: function(element) {
 			var select = this.getInputElement();
 
 			select.on('change', function(){ 
 				var data = window.amigo.data;
-				for (var n = 0; n < data.length; n++)
+				if (this.getValue() === "service_value")
 				{
-					if (data[n]['permalink'] === this.getValue())
+					$.each(usingLanguages, function(key, item){
+						dialog.getContentElement('info', item).setValue("");
+					});
+				} else {
+					for (var n = 0; n < data.length; n++)
 					{
-						for (item in data[n])
+						if (data[n]['permalink'] === this.getValue())
 						{
-							if (/lang.*/.test(item))
+							for (item in data[n])
 							{
-								dialog.getContentElement('info', item).setValue(data[n][item]);
-								dialog.getContentElement('info', item).setInitValue();
+								if (/lang.*/.test(item))
+								{
+									dialog.getContentElement('info', item).setValue(data[n][item]);
+									dialog.getContentElement('info', item).setInitValue();
+								}
 							}
+							break;
 						}
-						break;
 					}
 				}
 			});
 
 			var dialog = this.getDialog();
-			console.log(dialog);
 
 			var currentLocale = CKEDITOR.instances.editor1.config.currentLocale; // "lang_ru"
 			var usingLanguages = CKEDITOR.instances.editor1.config.usingLanguages;  // ["lang_ru", "lang_en"]
@@ -42,7 +48,6 @@ CKEDITOR.dialog.add("i18n", function(e) {
 				window.amigo.data = data;
 				for (var i=0; i < data.length; i++)
 				{
-					console.log(data[i]);
 					// var items = JSON.parse(data[i]);
 					select.appendHtml("<option value='" + data[i]['permalink'] + "'>" + data[i][currentLocale] + "</option>");
 				};
@@ -56,9 +61,29 @@ CKEDITOR.dialog.add("i18n", function(e) {
 			id: usingLanguages[k],
 			type: 'textarea',
 			html: '<textarea></textarea>',
-			label: usingLanguages[k]
+			label: usingLanguages[k],
+			setup: function(element) {
+				var select = dialog.getContentElement('info', 'format');
+
+				this.on('change', function() {
+					if (this.isChanged()) {
+						if (select.getValue() === "service_value")
+						{
+							$('#' + dialog.getContentElement('info', 'status').domId)[0].innerText = CKEDITOR.instances.editor1.lang.i18n.status_create;
+						} else {
+							$('#' + dialog.getContentElement('info', 'status').domId)[0].innerText = CKEDITOR.instances.editor1.lang.i18n.status_change;
+						}
+					}
+				});
+			}
 		});
 	}
+
+	tabElements.push({
+		type: 'html',
+		id: 'status',
+		html: CKEDITOR.instances.editor1.lang.i18n.status_default
+	});
 
 	return {
 		title: CKEDITOR.instances.editor1.lang.i18n.title,
@@ -85,7 +110,7 @@ CKEDITOR.dialog.add("i18n", function(e) {
 		{
 			type: 'button',
 			id: 'okBtn',
-			label: 'ok',
+			label: CKEDITOR.instances.editor1.lang.i18n.okBtn,
 			onClick: function() {
 				addSmth();
 			}
@@ -99,7 +124,6 @@ CKEDITOR.dialog.add("i18n", function(e) {
 		var currentLocale = CKEDITOR.instances.editor1.config.currentLocale;
 		var usingLanguages = CKEDITOR.instances.editor1.config.usingLanguages;
 		
-		// var t = $("select option:selected").text(); // амиго
 		var v = $("select").val();  //key2
 		
 		var  req = {};
@@ -111,27 +135,44 @@ CKEDITOR.dialog.add("i18n", function(e) {
 
 			if (textarea.getValue() !== "")
 			{
-				
-				req["locale"][item] = dialog.getContentElement('info', item).getValue();
-
 				if (textarea.isChanged())
 				{
-					// CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // t надо брать из textarea
-				} else {
-					CKEDITOR.dialog.getCurrent().hide();
+					fillTranslate(req, usingLanguages);
+					var destUrl = "";
+					// if (select.getValue() === "service_value")
+					// {
+					// 	destUrl = "http://meatkings.ru/sites/123/locales/locales";
+					// } else {
+					// 	destUrl = "http://meatkings.ru/sites/123/locales/locale." + v;
+					// }
+
+					// CKEDITOR.ajax.load(url + '', function(data) {
+
+						var t = dialog.getContentElement('info', currentLocale).getValue();
+						CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // t надо брать из textarea
+						// sent requesst (edit or create)
+						/*var request = $.ajax({
+							url: destUrl
+						});*/
+						CKEDITOR.dialog.getCurrent().hide();
+						console.log(req);
+						dialog.getContentElement('info', 'status').setValue(CKEDITOR.instances.editor1.lang.i18n.status_default);
+					// });
+					return false;
+				// } else {
+					// CKEDITOR.dialog.getCurrent().hide();
 				}
 				
 			} else {
-				alert("не все переводы заполнены");
+				alert(CKEDITOR.instances.editor1.lang.i18n.empty_txt);
 				return false;
 			}
 		});
-
-		var t = dialog.getContentElement('info', currentLocale).getValue();
-		CKEDITOR.instances.editor1.insertText('<t permalink="' + v + '">' + t + '</t>\n');  // t надо брать из textarea
-		// sent requesst (edit or create)
-		CKEDITOR.dialog.getCurrent().hide();
-
-
 	};
+
+	function fillTranslate(req, usingLanguages) {
+		$.each(usingLanguages, function(key, item){
+			req["locale"][item] = dialog.getContentElement('info', item).getValue();
+		});
+	}
 });
