@@ -6,7 +6,7 @@ CKEDITOR.plugins.add( 'cut',
     if ( editor.blockless )
       return;
 
-    CKEDITOR.addCss("hr.cut {display:block; height: 2px;width: 100%;background: #DDDD99;margin-bottom: 1em;}");
+    CKEDITOR.addCss("hr#cut {display:block; height: 2px;width: 100%;background: #DDDD99;margin-bottom: 1em;}");
 	  CKEDITOR.dtd['cut']={};
     CKEDITOR.dtd.$empty['cut']=1;
     CKEDITOR.dtd.$nonEditable['cut']=1;
@@ -17,7 +17,7 @@ CKEDITOR.plugins.add( 'cut',
       exec: function( editor )
       {
         var element = editor.document.createElement( 'hr' );
-        element.setAttribute('class', 'cut');
+        element.setAttribute('id', 'cut');
         editor.insertElement( element );
       },
 
