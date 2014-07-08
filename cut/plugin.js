@@ -7,10 +7,6 @@ CKEDITOR.plugins.add( 'cut',
       return;
 
     CKEDITOR.addCss("hr#cut {display:block; height: 2px;width: 100%;background: #DDDD99;margin-bottom: 1em;}");
-	  CKEDITOR.dtd['cut']={};
-    CKEDITOR.dtd.$empty['cut']=1;
-    CKEDITOR.dtd.$nonEditable['cut']=1;
-	  CKEDITOR.dtd.$object['cut']=1;
     editor.addCommand( 'insertCutTag',
     {
       canUndo: false,
@@ -21,7 +17,7 @@ CKEDITOR.plugins.add( 'cut',
         editor.insertElement( element );
       },
 
-      allowedContent: 'hr',
+      allowedContent: 'hr[id]',
       requiredContent: 'hr'
     });
 
